@@ -58,7 +58,6 @@ public sealed class BiomassGeneratorSystem : EntitySystem
 
             var actualYield = (int) (generator.CurrentExpectedYield);
             generator.CurrentExpectedYield -= actualYield;
-            //TODO: SEND  BIOMASS TO INTERNAL BUFFER
             _material.TryChangeMaterialAmount(uid, generator.RequiredMaterial, actualYield);
             RemComp<ActiveBiomassGeneratorComponent>(uid);
         }
@@ -138,10 +137,7 @@ public sealed class BiomassGeneratorSystem : EntitySystem
         var component = ent.Comp;
         EnsureComp<ActiveBiomassGeneratorComponent>(ent);
 
-
         var expectedYield = physics.FixturesMass * component.YieldPerUnitMass;
-        if (HasComp<ProduceComponent>(toProcess))
-            expectedYield *= component.ProduceYieldMultiplier;
         component.CurrentExpectedYield += expectedYield;
 
         component.ProcessingTimer += physics.FixturesMass * component.ProcessingTimePerUnitMass;
@@ -157,8 +153,8 @@ public sealed class BiomassGeneratorSystem : EntitySystem
 
     private bool CanGrind(Entity<BiomassGeneratorComponent> gen, EntityUid item)
     {
-        bool isPlant = HasComp<ProduceComponent>(item);
-        return isPlant;
+        //Right now just plants so just return hascomp's eval
+        return HasComp<ProduceComponent>(item);
     }
 
     public void UpdateStatus(EntityUid genUid, BiomassGeneratorStatus status, BiomassGeneratorComponent generator)
