@@ -35,13 +35,13 @@ public sealed partial class BiomassGeneratorComponent : Component
     /// How many units of biomass it produces for each unit of mass.
     /// </summary>
     [DataField, ViewVariables(VVAccess.ReadWrite)]
-    public float YieldPerUnitMass = 0.4f;
+    public float YieldPerUnitMass = 0.6f;
 
     /// <summary>
     /// How much to multiply biomass yield from botany produce.
     /// </summary>
     [DataField, ViewVariables(VVAccess.ReadWrite)]
-    public float ProduceYieldMultiplier = 0.25f;
+    public float ProduceYieldMultiplier = 1f;
 
     /// <summary>
     /// The time it takes to process a mob, per mass.

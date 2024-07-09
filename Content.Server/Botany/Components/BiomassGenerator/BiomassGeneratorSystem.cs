@@ -17,7 +17,6 @@ namespace Content.Server.Botany.Components.BiomassGenerator;
 public sealed class BiomassGeneratorSystem : EntitySystem
 {
     [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly SharedJitteringSystem _jitteringSystem = default!;
     [Dependency] private readonly SharedAudioSystem _sharedAudioSystem = default!;
     [Dependency] private readonly SharedAmbientSoundSystem _ambientSoundSystem = default!;
     [Dependency] private readonly SharedDoAfterSystem _doAfterSystem = default!;
@@ -60,21 +59,19 @@ public sealed class BiomassGeneratorSystem : EntitySystem
             var actualYield = (int) (generator.CurrentExpectedYield);
             generator.CurrentExpectedYield -= actualYield;
             //TODO: SEND  BIOMASS TO INTERNAL BUFFER
-
+            _material.TryChangeMaterialAmount(uid, generator.RequiredMaterial, actualYield);
             RemComp<ActiveBiomassGeneratorComponent>(uid);
         }
     }
 
     private void OnInit(EntityUid uid, ActiveBiomassGeneratorComponent component, ComponentInit args)
     {
-        _jitteringSystem.AddJitter(uid, -1, 100);
         _sharedAudioSystem.PlayPvs("/Audio/Machines/reclaimer_startup.ogg", uid);
         _ambientSoundSystem.SetAmbience(uid, true);
     }
 
     private void OnShutdown(EntityUid uid, ActiveBiomassGeneratorComponent component, ComponentShutdown args)
     {
-        RemComp<JitteringComponent>(uid);
         _ambientSoundSystem.SetAmbience(uid, false);
     }
 
@@ -139,7 +136,8 @@ public sealed class BiomassGeneratorSystem : EntitySystem
             return;
 
         var component = ent.Comp;
-        AddComp<ActiveBiomassGeneratorComponent>(ent);
+        EnsureComp<ActiveBiomassGeneratorComponent>(ent);
+
 
         var expectedYield = physics.FixturesMass * component.YieldPerUnitMass;
         if (HasComp<ProduceComponent>(toProcess))
