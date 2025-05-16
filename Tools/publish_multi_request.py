@@ -44,7 +44,7 @@ def main():
     print("Publish successfully started, adding files...")
 
     for file in get_files_to_publish():
-        print(f"Publishing {file}")
+        print(f"Publishing {file} {os.path.getsize({file}) bytes")
         with open(file, "rb") as f:
             headers = {
                 "Content-Type": "application/octet-stream",
